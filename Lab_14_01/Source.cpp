@@ -1,59 +1,43 @@
 ﻿#include <iostream>
 #include <vector>
+#include <algorithm> // для copy_if та max_element
+#include <cstdlib>   // для rand, srand
+#include <ctime>     // для time
 using namespace std;
 
-// --- Підпрограма для створення масиву ---
-void createArray(vector<int>& arr, int n) {
-    arr.resize(n);
-    cout << "Enter " << n << " integers: ";
-    for (int i = 0; i < n; ++i)
-        cin >> arr[i];
+// --- Функція генерації випадкового числа ---
+int RandomNumber() {
+    return rand() % 100; // числа від 0 до 99
 }
 
-// --- Підпрограма для виведення масиву ---
-void printArray(const vector<int>& arr) {
-    for (int val : arr)
-        cout << val << " ";
-    cout << endl;
-}
-
-// --- Підпрограма для знаходження найбільшого непарного елемента ---
-int maxOddElement(const vector<int>& arr) {
-    int maxOdd = -1; // Припустимо, що всі числа >=0, або можна використати INT_MIN
-    bool found = false;
-
-    for (int val : arr) {
-        if (val % 2 != 0) { // якщо число непарне
-            if (!found || val > maxOdd) {
-                maxOdd = val;
-                found = true;
-            }
-        }
-    }
-
-    if (!found) {
-        cout << "No odd elements found in the array." << endl;
-        return -1; // або будь-яке інше значення, що позначає відсутність непарних чисел
-    }
-
-    return maxOdd;
-}
-
-// --- Головна функція ---
 int main() {
+    srand(static_cast<unsigned>(time(0))); // ініціалізація генератора випадкових чисел
     int n;
     cout << "Enter the number of elements: ";
     cin >> n;
 
-    vector<int> arr;
+    vector<int> vec(n);
 
-    createArray(arr, n);      // Створення масиву
+    // Заповнюємо вектор випадковими числами
+    generate(vec.begin(), vec.end(), RandomNumber);
+
     cout << "Array elements: ";
-    printArray(arr);          // Виведення масиву
+    for (int val : vec)
+        cout << val << " ";
+    cout << endl;
 
-    int maxOdd = maxOddElement(arr);  // Пошук найбільшого непарного елемента
-    if (maxOdd != -1)
+    // Відбираємо непарні елементи
+    vector<int> oddElements;
+    copy_if(vec.begin(), vec.end(), back_inserter(oddElements),
+        [](int x) { return x % 2 != 0; });
+
+    if (oddElements.empty()) {
+        cout << "No odd elements found in the array." << endl;
+    }
+    else {
+        int maxOdd = *max_element(oddElements.begin(), oddElements.end());
         cout << "The largest odd element is: " << maxOdd << endl;
+    }
 
     return 0;
 }

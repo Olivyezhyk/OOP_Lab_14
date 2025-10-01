@@ -1,89 +1,46 @@
 ﻿#include <iostream>
+#include <list>
+#include <cstdlib>   // rand, srand
+#include <ctime>     // time
 using namespace std;
 
-// --- Структура вузла списку ---
-struct Node {
-    int data;
-    Node* next;
-};
-
-// --- Підпрограма для створення списку ---
-void createList(Node*& head, int n) {
-    head = nullptr;
-    Node* tail = nullptr;
-
-    cout << "Enter " << n << " integers: ";
-    for (int i = 0; i < n; ++i) {
-        int value;
-        cin >> value;
-        Node* newNode = new Node{ value, nullptr };
-        if (!head) {
-            head = newNode;
-            tail = newNode;
-        }
-        else {
-            tail->next = newNode;
-            tail = newNode;
-        }
-    }
+// --- Функція генерації випадкового числа ---
+int RandomNumber() {
+    return rand() % 100; // числа від 0 до 99
 }
 
-// --- Підпрограма для виведення списку ---
-void printList(const Node* head) {
-    const Node* current = head;
-    while (current) {
-        cout << current->data << " ";
-        current = current->next;
-    }
-    cout << endl;
-}
-
-// --- Підпрограма для дублювання елементів зі значенням key ---
-void duplicateElements(Node*& head, int key) {
-    Node* current = head;
-    while (current) {
-        if (current->data == key) {
-            Node* newNode = new Node{ key, current->next };
-            current->next = newNode;
-            current = newNode->next; // пропускаємо доданий вузол
-        }
-        else {
-            current = current->next;
-        }
-    }
-}
-
-// --- Підпрограма для очищення списку ---
-void deleteList(Node*& head) {
-    while (head) {
-        Node* temp = head;
-        head = head->next;
-        delete temp;
-    }
-}
-
-// --- Головна функція ---
 int main() {
-    Node* head = nullptr;
+    srand(static_cast<unsigned>(time(0))); // ініціалізація генератора випадкових чисел
+
+    list<int> lst;
     int n;
 
     cout << "Enter the number of elements: ";
     cin >> n;
 
-    createList(head, n);  // створення списку
+    // Заповнюємо список випадковими числами
+    for (int i = 0; i < n; ++i)
+        lst.push_back(RandomNumber());
 
     cout << "Original list: ";
-    printList(head);      // виведення списку
+    for (int val : lst)
+        cout << val << " ";
+    cout << endl;
 
     int key;
     cout << "Enter the value to duplicate: ";
     cin >> key;
 
-    duplicateElements(head, key); // дублювання елементів
+    // Дублюємо елементи зі значенням key
+    for (auto it = lst.begin(); it != lst.end(); ++it) {
+        if (*it == key)
+            it = lst.insert(next(it), key); // вставляємо копію після поточного
+    }
 
     cout << "Modified list: ";
-    printList(head); // виведення результату
+    for (int val : lst)
+        cout << val << " ";
+    cout << endl;
 
-    deleteList(head); // очищення пам'яті
     return 0;
 }
